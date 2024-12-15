@@ -1,4 +1,4 @@
-#In a ring topology, each switch is connected to two other switches in a circular manner.
+# In a bus topology, all switches are connected to a single backbone switch. The hosts are connected to any of the switches along the backbone.
 from mininet.net import Mininet
 from mininet.node import RemoteController
 from mininet.cli import CLI
@@ -6,13 +6,13 @@ from mininet.link import TCLink
 
 net = Mininet(controller=None, link=TCLink)
 
-# Adding controllers (2 controllers instead of 3)
+# Adding controllers
 c1 = net.addController('c1', controller=RemoteController, ip='127.0.0.1', port=6633)
 c2 = net.addController('c2', controller=RemoteController, ip='127.0.0.1', port=6634)
 
-# Adding switches
+# Adding switches (5 switches for simplicity)
 switches = []
-for i in range(1, 6):  # Reduced to 5 switches (as ring topology requires less switches with fewer hosts)
+for i in range(1, 6):
     switch = net.addSwitch(f's{i}', protocols='OpenFlow13')
     switch.start([c1, c2])
     switches.append(switch)
@@ -23,11 +23,11 @@ for i in range(1, 11):
     host = net.addHost(f'h{i}', ip=f'10.0.0.{i}/24')
     hosts.append(host)
 
-# Creating ring topology between switches
-for i in range(len(switches)):
-    net.addLink(switches[i], switches[(i + 1) % len(switches)])
+# Bus topology: Connect all switches to the first switch (backbone)
+for i in range(1, len(switches)):
+    net.addLink(switches[0], switches[i])
 
-# Connecting hosts to switches (Distribute 10 hosts across 5 switches)
+# Connect hosts to switches
 net.addLink(hosts[0], switches[0])
 net.addLink(hosts[1], switches[0])
 net.addLink(hosts[2], switches[1])
@@ -42,4 +42,3 @@ net.addLink(hosts[9], switches[4])
 net.start()
 CLI(net)
 net.stop()
-
