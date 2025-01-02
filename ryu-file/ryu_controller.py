@@ -1,3 +1,4 @@
+#alternative to simple_switch_13.py script to run the controller i have to use this script. 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
