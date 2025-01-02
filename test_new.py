@@ -1,6 +1,7 @@
-from langchain_community.chat_models import ChatOpenAI, ChatAnthropic
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 import difflib
 import os
 from dotenv import load_dotenv
@@ -23,11 +24,25 @@ prompt_template = ChatPromptTemplate.from_messages([
 ])
 
 # Initialize LLMs
+
 llms = {
-    "gpt-4": ChatOpenAI(model_name="gpt-4", temperature=0),
-    "gpt-3.5": ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0),
-    "claude": ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
+    "gpt-4": ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model="gpt-4",
+        temperature=0
+    ),
+    "gpt-3.5": ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model="gpt-3.5-turbo",
+        temperature=0
+    ),
+    "claude": ChatAnthropic(
+        api_key=os.getenv("ANTHROPIC_API_KEY"),
+        model="claude-3-sonnet-20240229",
+        temperature=0
+    )
 }
+
 
 # Create output directory
 output_dir = Path("llm_generated_code")
