@@ -1,7 +1,6 @@
-from langchain.chat_models import ChatOpenAI, ChatAnthropic
-from langchain.prompts import ChatPromptTemplate
-from langchain.output_parsers import PythonOutputParser
-from langchain.callbacks import get_openai_callback
+from langchain_community.chat_models import ChatOpenAI, ChatAnthropic
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.callbacks import get_openai_callback
 import difflib
 import os
 from dotenv import load_dotenv
