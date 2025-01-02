@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.callbacks import get_openai_callback
+from langchain_core.output_parsers import StrOutputParser
 import difflib
 import os
 from dotenv import load_dotenv
@@ -18,25 +18,29 @@ SYSTEM_PROMPT = """You are a Trained Network Automation Engine Expert. Do not pr
 USER_PROMPT = """create a program to 10 hosts and 5 switches and 2 controllers for tree topology"""
 
 # Create prompt template
-prompt_template = ChatPromptTemplate.from_messages([
+prompt = ChatPromptTemplate.from_messages([
     ("system", SYSTEM_PROMPT),
     ("human", USER_PROMPT)
 ])
+
+# Initialize output parser
+output_parser = StrOutputParser()
 
 # Initialize LLMs with minimal configuration
 try:
     llms = {
         "gpt-4": ChatOpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            model_name="gpt-4"
+            model="gpt-4",
+            temperature=0
         ),
         "gpt-3.5": ChatOpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            model_name="gpt-3.5-turbo"
+            model="gpt-3.5-turbo",
+            temperature=0
         ),
         "claude": ChatAnthropic(
-            anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
-            model_name="claude-3-sonnet-20240229"
+            model="claude-3-sonnet-20240229",
+            temperature=0,
+            anthropic_api_key=os.getenv("ANTHROPIC_API_KEY")
         )
     }
 except Exception as e:
@@ -49,8 +53,8 @@ output_dir.mkdir(exist_ok=True)
 
 def get_code_from_llm(llm, prompt):
     """Get code from LLM and save to file"""
-    response = prompt_template.invoke({"messages": []}).content
-    return response
+    chain = prompt | llm | output_parser
+    return chain.invoke({})
 
 def save_code_to_file(code, filename):
     """Save generated code to file"""
@@ -86,16 +90,14 @@ def main():
         print(f"Generating code using {llm_name}...")
         
         try:
-            with get_openai_callback() as cb:
-                code = get_code_from_llm(llm, prompt_template)
-                generated_codes[llm_name] = code
-                
-                # Save to file
-                filename = f"sdn_code_{llm_name}.py"
-                save_code_to_file(code, filename)
-                
-                print(f"Code saved to {filename}")
-                print(f"Tokens used: {cb.total_tokens}")
+            code = get_code_from_llm(llm, prompt)
+            generated_codes[llm_name] = code
+            
+            # Save to file
+            filename = f"sdn_code_{llm_name}.py"
+            save_code_to_file(code, filename)
+            
+            print(f"Code saved to {filename}")
                 
         except Exception as e:
             print(f"Error with {llm_name}: {str(e)}")

@@ -1,5 +1,6 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
+from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 import os
 
@@ -8,9 +9,10 @@ load_dotenv()
 
 def test_openai():
     try:
-        # Initialize ChatOpenAI with minimal configuration
+        # Initialize ChatOpenAI with recommended configuration
         chat = ChatOpenAI(
-            api_key=os.getenv("OPENAI_API_KEY")
+            model="gpt-3.5-turbo",
+            temperature=0
         )
         
         # Simple test message
@@ -28,10 +30,10 @@ def test_openai():
 
 def test_anthropic():
     try:
-        from langchain_anthropic import ChatAnthropic
-        
         # Initialize ChatAnthropic
         chat = ChatAnthropic(
+            model="claude-3-sonnet-20240229",
+            temperature=0,
             anthropic_api_key=os.getenv("ANTHROPIC_API_KEY")
         )
         
