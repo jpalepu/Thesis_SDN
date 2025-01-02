@@ -7,13 +7,13 @@ import os
 from dotenv import load_dotenv
 import json
 from pathlib import Path
-import openai
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
 
-# Set OpenAI API key globally
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Define the system prompt
 SYSTEM_PROMPT = """You are a Trained Network Automation Engine Expert. Do not provide any text/summary before or after response. Only Provide code for mininet with ryu controller setup using Langchain. Not Ryu application and Provide code and debug issues related to all network engineering tasks. Do not provide any text/description only provide code."""
@@ -27,12 +27,37 @@ prompt_template = ChatPromptTemplate.from_messages([
     ("human", USER_PROMPT)
 ])
 
+<<<<<<< HEAD
+# Initialize LLMs with minimal configuration
+try:
+    llms = {
+        "gpt-4": ChatOpenAI(
+            model="gpt-4",
+            temperature=0,
+            client=client
+        ),
+        "gpt-3.5": ChatOpenAI(
+            model="gpt-3.5-turbo",
+            temperature=0,
+            client=client
+        ),
+        "claude": ChatAnthropic(
+            anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
+            model="claude-3-sonnet-20240229",
+            temperature=0
+        )
+    }
+except Exception as e:
+    print(f"Error initializing LLMs: {str(e)}")
+    raise
+=======
 # Initialize LLMs
 llms = {
     "gpt-4": ChatOpenAI(model_name="gpt-4", temperature=0),
     "gpt-3.5": ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0),
     "claude": ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
 }
+>>>>>>> 5dca459f67a41c4d3bbaf551bf487e096f37e092
 
 # Create output directory
 output_dir = Path("llm_generated_code")
