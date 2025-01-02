@@ -23,11 +23,23 @@ prompt_template = ChatPromptTemplate.from_messages([
     ("human", USER_PROMPT)
 ])
 
-# Initialize LLMs
+# Initialize LLMs with specific configurations
 llms = {
-    "gpt-4": ChatOpenAI(model="gpt-4", temperature=0),
-    "gpt-3.5": ChatOpenAI(model="gpt-3.5-turbo", temperature=0),
-    "claude": ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
+    "gpt-4": ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model="gpt-4",
+        temperature=0
+    ),
+    "gpt-3.5": ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model="gpt-3.5-turbo",
+        temperature=0
+    ),
+    "claude": ChatAnthropic(
+        api_key=os.getenv("ANTHROPIC_API_KEY"),
+        model="claude-3-sonnet-20240229",
+        temperature=0
+    )
 }
 
 # Create output directory
