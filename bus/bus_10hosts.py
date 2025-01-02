@@ -8,7 +8,7 @@ from mininet.log import setLogLevel
 def createNetwork():
     net = Mininet()
     
-    # Add controllers
+    # Add controllers with specific control domains
     c1 = net.addController('c1', controller=RemoteController, ip='127.0.0.1', port=6633)
     c2 = net.addController('c2', controller=RemoteController, ip='127.0.0.1', port=6634)
     c3 = net.addController('c3', controller=RemoteController, ip='127.0.0.1', port=6635)
@@ -19,18 +19,24 @@ def createNetwork():
         switch = net.addSwitch(f's{i+1}')
         switches.append(switch)
     
-    # Add hosts
+    # Add hosts and connect them
     hosts = []
     for i in range(10):
         host = net.addHost(f'h{i+1}')
         hosts.append(host)
-        # Connect each host to the nearest switch in bus topology
         switch_index = i // 2
         net.addLink(host, switches[switch_index])
     
-    # Connect switches in a bus topology
+    # Connect switches in bus topology
     for i in range(len(switches)-1):
         net.addLink(switches[i], switches[i+1])
+    
+    # Assign switches to controllers
+    switches[0].start([c1, c2])  # First switch controlled by c1 and c2
+    switches[1].start([c1, c2])  # Second switch controlled by c1 and c2
+    switches[2].start([c2, c3])  # Middle switch controlled by c2 and c3
+    switches[3].start([c2, c3])  # Fourth switch controlled by c2 and c3
+    switches[4].start([c1, c3])  # Last switch controlled by c1 and c3
     
     net.start()
     CLI(net)

@@ -8,7 +8,7 @@ from mininet.log import setLogLevel
 def createNetwork():
     net = Mininet()
     
-    # Add controllers
+    # Add controllers with specific control domains
     c1 = net.addController('c1', controller=RemoteController, ip='127.0.0.1', port=6633)
     c2 = net.addController('c2', controller=RemoteController, ip='127.0.0.1', port=6634)
     c3 = net.addController('c3', controller=RemoteController, ip='127.0.0.1', port=6635)
@@ -29,7 +29,7 @@ def createNetwork():
     net.addLink(s2, s4)
     net.addLink(s3, s5)
     
-    # Add hosts
+    # Add hosts and connect them
     hosts = []
     for i in range(30):
         host = net.addHost(f'h{i+1}')
@@ -39,6 +39,13 @@ def createNetwork():
             net.addLink(host, s4)
         else:
             net.addLink(host, s5)
+    
+    # Assign switches to controllers
+    s1.start([c1])  # Root switch controlled by c1
+    s2.start([c1, c2])  # Level 1 switches controlled by c1 and c2
+    s3.start([c1, c2])
+    s4.start([c2, c3])  # Leaf switches controlled by c2 and c3
+    s5.start([c2, c3])
     
     net.start()
     CLI(net)
