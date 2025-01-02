@@ -27,7 +27,6 @@ prompt_template = ChatPromptTemplate.from_messages([
     ("human", USER_PROMPT)
 ])
 
-<<<<<<< HEAD
 # Initialize LLMs with minimal configuration
 try:
     llms = {
@@ -50,14 +49,12 @@ try:
 except Exception as e:
     print(f"Error initializing LLMs: {str(e)}")
     raise
-=======
 # Initialize LLMs
 llms = {
     "gpt-4": ChatOpenAI(model_name="gpt-4", temperature=0),
     "gpt-3.5": ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0),
     "claude": ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
 }
->>>>>>> 5dca459f67a41c4d3bbaf551bf487e096f37e092
 
 # Create output directory
 output_dir = Path("llm_generated_code")
