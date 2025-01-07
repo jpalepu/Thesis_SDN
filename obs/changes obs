@@ -1,0 +1,49 @@
+CHANGES FOUND: 
+
+The main difference between the two codes is how they handle the creation and management of the network, specifically regarding the following aspects:
+1. Network Initialization and Switch Type:
+
+    Code that doesn't work:
+        Mininet() is used directly without specifying the switch type or link type. This uses the default OVSSwitch for OpenFlow (if not specified).
+    Code that works:
+        Mininet(switch=OVSSwitch, link=TCLink) is used explicitly to specify that Open vSwitches (OVSSwitch) and TCLink should be used. TCLink is specifically useful if you want to simulate network bandwidth, delays, and other traffic control features.
+        The protocol for OpenFlow (OpenFlow13) is explicitly set for each switch, which may be necessary to ensure compatibility with controllers using OpenFlow 1.3.
+
+2. Switch Creation with Protocols:
+
+    Code that doesn't work:
+        Switches are created without specifying protocols.
+    Code that works:
+        protocols='OpenFlow13' is passed when creating switches, which ensures compatibility with controllers that use OpenFlow 1.3 (as seen in the controller's IP/port assignments).
+
+3. Controller Start and Network Build Process:
+
+    Code that doesn't work:
+        The controllers are added but not explicitly started using start(). This could result in issues where the controllers are not correctly initialized before starting the network.
+    Code that works:
+        The net.build() function is called explicitly before starting the controllers and switches, which ensures that all necessary steps are completed to set up the network before it starts running.
+        Controllers are explicitly started using c1.start(), c2.start(), and c3.start().
+
+4. STP (Spanning Tree Protocol) Configuration:
+
+    Code that doesn't work:
+        STP is not configured on the switches.
+    Code that works:
+        STP is explicitly enabled using Open vSwitch commands (ovs-vsctl set Bridge <switch> stp_enable=true), which helps avoid network loops and ensures redundancy is correctly handled when multiple controllers are in use.
+
+5. Sleep Time to Wait for STP Convergence:
+
+    Code that doesn't work:
+        There is no sleep or wait time for STP convergence.
+    Code that works:
+        The script includes a sleep(10) command to wait for STP to converge before the network is fully operational. This is critical in a redundant setup, as STP needs time to calculate and disable redundant paths.
+
+
+
+Use OVSSwitch and TCLink to ensure proper switch and link types are used.
+Set OpenFlow protocol explicitly for switches.
+Call net.build() to ensure proper network setup before starting controllers and switches.
+Start the controllers explicitly using start() method.
+Enable STP on switches for redundancy handling and avoid network loops.
+Add a delay (sleep) to ensure STP convergence.
+
