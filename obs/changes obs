@@ -38,7 +38,9 @@ The main difference between the two codes is how they handle the creation and ma
     Code that works:
         The script includes a sleep(10) command to wait for STP to converge before the network is fully operational. This is critical in a redundant setup, as STP needs time to calculate and disable redundant paths.
 
-
+-----------------------
+Fixes to be made! (claude model)
+-----------------------
 
 Use OVSSwitch and TCLink to ensure proper switch and link types are used.
 Set OpenFlow protocol explicitly for switches.
